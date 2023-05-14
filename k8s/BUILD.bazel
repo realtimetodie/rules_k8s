@@ -1,0 +1,47 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# For stardoc to reference the files
+exports_files(
+    ["defs.bzl"],
+    visibility = ["//docs:__pkg__"],
+)
+
+# This is the target rule authors should put in their "toolchains"
+# attribute in order to get a runtime for the correct platform.
+# See https://docs.bazel.build/versions/main/toolchains.html#writing-rules-that-use-toolchains
+toolchain_type(name = "toolchain_type")
+
+bzl_library(
+    name = "defs",
+    srcs = ["defs.bzl"],
+    deps = ["//k8s/private:kubectl_apply"],
+)
+
+bzl_library(
+    name = "dependencies",
+    srcs = ["dependencies.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
+    ],
+)
+
+bzl_library(
+    name = "repositories",
+    srcs = ["repositories.bzl"],
+    deps = [
+        "//k8s/private:toolchains_repo",
+        "//k8s/private:versions",
+        "@bazel_skylib//lib:versions",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
+    ],
+)
+
+bzl_library(
+    name = "toolchain",
+    srcs = ["toolchain.bzl"],
+)
